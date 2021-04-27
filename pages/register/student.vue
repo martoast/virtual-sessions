@@ -11,12 +11,6 @@
       @blur="$v.username.$touch()"
     ></v-text-field>
     <v-text-field
-      v-model="password"
-      type="password"
-      label="Password"
-      required
-    ></v-text-field>
-    <v-text-field
       v-model="email"
       :error-messages="emailErrors"
       label="E-mail"
@@ -24,10 +18,16 @@
       @input="$v.email.$touch()"
       @blur="$v.email.$touch()"
     ></v-text-field>
+    <v-text-field
+      v-model="password"
+      type="password"
+      label="Password"
+      required
+    ></v-text-field>
     <v-select
       v-model="selected_genres"
       :items="genres"
-      label="Select Item"
+      label="Select genres"
       multiple
     >
       <template v-slot:selection="{ item, index }">
@@ -52,6 +52,7 @@ import { required, maxLength, email } from 'vuelidate/lib/validators'
 
 export default {
   mixins: [validationMixin],
+  middleware: 'guest',
 
   validations: {
     username: { required, maxLength: maxLength(10) },
