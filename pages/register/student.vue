@@ -2,25 +2,22 @@
   <form>
     <h1 class="title">Student register</h1>
     <v-text-field
-      v-model="form.name"
-      :error-messages="nameErrors"
+      v-model="username"
+      :error-messages="usernameErrors"
       :counter="10"
-      label="Name"
+      label="Username"
       required
-      @input="$v.name.$touch()"
-      @blur="$v.name.$touch()"
+      @input="$v.username.$touch()"
+      @blur="$v.username.$touch()"
     ></v-text-field>
     <v-text-field
-      v-model="form.password"
-      :counter="10"
+      v-model="password"
       type="password"
       label="Password"
       required
-      @input="$v.name.$touch()"
-      @blur="$v.name.$touch()"
     ></v-text-field>
     <v-text-field
-      v-model="form.email"
+      v-model="email"
       :error-messages="emailErrors"
       label="E-mail"
       required
@@ -28,7 +25,7 @@
       @blur="$v.email.$touch()"
     ></v-text-field>
     <v-select
-      v-model="form.selected_genres"
+      v-model="selected_genres"
       :items="genres"
       label="Select Item"
       multiple
@@ -38,16 +35,11 @@
           <span>{{ item }}</span>
         </v-chip>
         <span v-if="index === 1" class="grey--text caption">
-          (+{{ form.selected_genres.length - 1 }} others)
+          (+{{ selected_genres.length - 1 }} others)
         </span>
       </template>
     </v-select>
-    <v-checkbox
-      v-model="form.checkbox"
-      :error-messages="checkboxErrors"
-      label="Do you agree?"
-      required
-    ></v-checkbox>
+    <v-checkbox v-model="checkbox" label="Do you agree?" required></v-checkbox>
 
     <v-btn class="mr-4" @click="submit"> submit </v-btn>
     <v-btn @click="clear"> clear </v-btn>
@@ -62,7 +54,7 @@ export default {
   mixins: [validationMixin],
 
   validations: {
-    name: { required, maxLength: maxLength(10) },
+    username: { required, maxLength: maxLength(10) },
     email: { required, email },
     select: { required },
     password: { required },
@@ -74,35 +66,24 @@ export default {
   },
 
   data: () => ({
-    form: {
-      name: null,
-      email: null,
-      selected_genres: [],
-      select: null,
-    },
+    username: null,
+    email: null,
+    password: null,
+    selected_genres: [],
+    select: null,
     checkbox: false,
     genres: ['House', 'Basshouse', 'Dubstep', 'Drum&Bass', 'Garage', 'Techno'],
+    success: null,
+    error: null,
   }),
 
   computed: {
-    checkboxErrors() {
+    usernameErrors() {
       const errors = []
-      if (!this.$v.checkbox.$dirty) return errors
-      !this.$v.checkbox.checked && errors.push('You must agree to continue!')
-      return errors
-    },
-    selectErrors() {
-      const errors = []
-      if (!this.$v.select.$dirty) return errors
-      !this.$v.select.required && errors.push('Item is required')
-      return errors
-    },
-    nameErrors() {
-      const errors = []
-      if (!this.$v.name.$dirty) return errors
-      !this.$v.name.maxLength &&
+      if (!this.$v.username.$dirty) return errors
+      !this.$v.username.maxLength &&
         errors.push('Name must be at most 10 characters long')
-      !this.$v.name.required && errors.push('Name is required.')
+      !this.$v.username.required && errors.push('Name is required.')
       return errors
     },
     emailErrors() {
@@ -115,16 +96,28 @@ export default {
   },
 
   methods: {
-    submit() {
+    async submit() {
       this.$v.$touch()
+      try {
+        this.$axios.setToken(false)
+        await this.$axios.post('auth/local/register', {
+          username: this.username,
+          email: this.email,
+          password: this.password,
+        })
+        this.success = `A confirmation link has been sent to your email account. \
+ Please click on the link to complete the registration process.`
+      } catch (e) {
+        this.error = e.response.data.message[0].messages[0].message
+      }
     },
     clear() {
       this.$v.$reset()
-      this.form.name = null
-      this.form.password = null
-      this.form.email = null
-      this.form.select = null
-      this.form.checkbox = false
+      this.username = null
+      this.password = null
+      this.email = null
+      this.select = null
+      this.checkbox = false
     },
   },
 }
