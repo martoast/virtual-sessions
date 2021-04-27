@@ -6,6 +6,7 @@
       <v-btn text> Login </v-btn>
       <v-btn text to="/register"> Sign up </v-btn>
     </v-app-bar>
+    <Navbar />
     <v-main>
       <v-container>
         <nuxt />
@@ -19,9 +20,11 @@
 
 <script>
 import Search from '~/components/Layout/AppBar/Search'
+import Navbar from '~/components/Navbar'
 export default {
   components: {
     Search,
+    Navbar,
   },
   data() {
     return {

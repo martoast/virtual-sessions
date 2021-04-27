@@ -1,7 +1,8 @@
 <template>
   <form>
+    <h1 class="title">Student register</h1>
     <v-text-field
-      v-model="name"
+      v-model="form.name"
       :error-messages="nameErrors"
       :counter="10"
       label="Name"
@@ -10,7 +11,16 @@
       @blur="$v.name.$touch()"
     ></v-text-field>
     <v-text-field
-      v-model="email"
+      v-model="form.password"
+      :counter="10"
+      type="password"
+      label="Password"
+      required
+      @input="$v.name.$touch()"
+      @blur="$v.name.$touch()"
+    ></v-text-field>
+    <v-text-field
+      v-model="form.email"
       :error-messages="emailErrors"
       label="E-mail"
       required
@@ -18,21 +28,25 @@
       @blur="$v.email.$touch()"
     ></v-text-field>
     <v-select
-      v-model="select"
-      :items="items"
-      :error-messages="selectErrors"
-      label="Item"
-      required
-      @change="$v.select.$touch()"
-      @blur="$v.select.$touch()"
-    ></v-select>
+      v-model="form.selected_genres"
+      :items="genres"
+      label="Select Item"
+      multiple
+    >
+      <template v-slot:selection="{ item, index }">
+        <v-chip v-if="index === 0">
+          <span>{{ item }}</span>
+        </v-chip>
+        <span v-if="index === 1" class="grey--text caption">
+          (+{{ form.selected_genres.length - 1 }} others)
+        </span>
+      </template>
+    </v-select>
     <v-checkbox
-      v-model="checkbox"
+      v-model="form.checkbox"
       :error-messages="checkboxErrors"
       label="Do you agree?"
       required
-      @change="$v.checkbox.$touch()"
-      @blur="$v.checkbox.$touch()"
     ></v-checkbox>
 
     <v-btn class="mr-4" @click="submit"> submit </v-btn>
@@ -51,6 +65,7 @@ export default {
     name: { required, maxLength: maxLength(10) },
     email: { required, email },
     select: { required },
+    password: { required },
     checkbox: {
       checked(val) {
         return val
@@ -59,11 +74,14 @@ export default {
   },
 
   data: () => ({
-    name: '',
-    email: '',
-    select: null,
-    items: ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
+    form: {
+      name: null,
+      email: null,
+      selected_genres: [],
+      select: null,
+    },
     checkbox: false,
+    genres: ['House', 'Basshouse', 'Dubstep', 'Drum&Bass', 'Garage', 'Techno'],
   }),
 
   computed: {
@@ -102,10 +120,11 @@ export default {
     },
     clear() {
       this.$v.$reset()
-      this.name = ''
-      this.email = ''
-      this.select = null
-      this.checkbox = false
+      this.form.name = null
+      this.form.password = null
+      this.form.email = null
+      this.form.select = null
+      this.form.checkbox = false
     },
   },
 }
