@@ -1,58 +1,70 @@
 <template>
-  <form>
-    <h1 class="title">Student register</h1>
-    <v-text-field
-      v-model="username"
-      :error-messages="usernameErrors"
-      :counter="10"
-      label="Username"
-      required
-      @input="$v.username.$touch()"
-      @blur="$v.username.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="email"
-      :error-messages="emailErrors"
-      label="E-mail"
-      required
-      @input="$v.email.$touch()"
-      @blur="$v.email.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="password"
-      type="password"
-      label="Password"
-      required
-    ></v-text-field>
-    <v-select
-      v-model="selected_genres"
-      :items="genres"
-      label="Select genres"
-      multiple
-    >
-      <template v-slot:selection="{ item, index }">
-        <v-chip v-if="index === 0">
-          <span>{{ item }}</span>
-        </v-chip>
-        <span v-if="index === 1" class="grey--text caption">
-          (+{{ selected_genres.length - 1 }} others)
-        </span>
-      </template>
-    </v-select>
-    <v-checkbox v-model="checkbox" label="Do you agree?" required></v-checkbox>
+  <div>
+    <Notification v-if="success" type="success" :message="success" />
+    <Notification v-if="error" type="danger" :message="error" />
+    <form v-if="!success" method="post" @submit.prevent="submit">
+      <h1 class="title">Student register</h1>
+      <v-text-field
+        v-model="username"
+        :error-messages="usernameErrors"
+        :counter="10"
+        label="Username"
+        required
+        @input="$v.username.$touch()"
+        @blur="$v.username.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="email"
+        :error-messages="emailErrors"
+        label="E-mail"
+        required
+        @input="$v.email.$touch()"
+        @blur="$v.email.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="password"
+        type="password"
+        label="Password"
+        required
+      ></v-text-field>
+      <v-select
+        v-model="selected_genres"
+        :items="genres"
+        label="Select genres"
+        multiple
+      >
+        <template v-slot:selection="{ item, index }">
+          <v-chip v-if="index === 0">
+            <span>{{ item }}</span>
+          </v-chip>
+          <span v-if="index === 1" class="grey--text caption">
+            (+{{ selected_genres.length - 1 }} others)
+          </span>
+        </template>
+      </v-select>
+      <v-checkbox
+        v-model="checkbox"
+        label="Do you agree?"
+        required
+      ></v-checkbox>
 
-    <v-btn class="mr-4" @click="submit"> submit </v-btn>
-    <v-btn @click="clear"> clear </v-btn>
-  </form>
+      <v-btn class="mr-4" @click="submit"> submit </v-btn>
+      <v-btn @click="clear"> clear </v-btn>
+    </form>
+  </div>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, email } from 'vuelidate/lib/validators'
+import Notification from '~/components/Notification'
 
 export default {
   mixins: [validationMixin],
   middleware: 'guest',
+  components: {
+    Notification,
+  },
 
   validations: {
     username: { required, maxLength: maxLength(10) },

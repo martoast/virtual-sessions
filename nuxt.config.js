@@ -1,11 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
 
-require('dotenv').config({
-  path:
-    '.env.' +
-    (process.env.NODE_ENV == 'development' ? 'local' : process.env.NODE_ENV),
-  systemvars: true,
-})
+require('dotenv').config()
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -42,7 +37,8 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/auth-next',
+    '@nuxtjs/dotenv',
+    '@nuxtjs/auth',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

@@ -2,25 +2,16 @@
   <div>
     <h2 class="title has-text-centered">Log In</h2>
 
-    <Notification v-if="error" type="danger" :message="error" />
+    <!-- <Notification v-if="error" type="danger" :message="error" /> -->
 
     <form method="post" @submit.prevent="login">
-      <v-text-field
-        v-model="form.email"
-        :error-messages="emailErrors"
-        label="E-mail"
-        required
-        @input="$v.email.$touch()"
-        @blur="$v.email.$touch()"
-      ></v-text-field>
+      <v-text-field v-model="form.email" label="E-mail" required></v-text-field>
       <v-text-field
         v-model="form.password"
         :counter="10"
         type="password"
         label="Password"
         required
-        @input="$v.name.$touch()"
-        @blur="$v.name.$touch()"
       ></v-text-field>
 
       <div class="control">
@@ -69,6 +60,7 @@ export default {
         this.$router.push('/')
       } catch (e) {
         this.error = e.response.data.message[0].messages[0].message
+        alert(this.error)
       }
     },
   },

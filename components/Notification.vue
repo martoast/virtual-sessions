@@ -1,7 +1,7 @@
 <template>
-  <div :class="`is-${type}`" class="notification">
+  <v-banner two-line :class="type" class="notification">
     {{ message }}
-  </div>
+  </v-banner>
 </template>
 
 <script>

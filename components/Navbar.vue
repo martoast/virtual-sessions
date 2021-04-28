@@ -1,34 +1,34 @@
 <template>
-  <v-app dark>
-    <Navbar />
+  <v-app-bar :clipped-left="clipped" fixed app>
+    <v-toolbar-title v-text="title" />
+    <v-spacer />
 
-    <v-main>
-      <v-container>
-        <nuxt />
-      </v-container>
-    </v-main>
-    <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
-  </v-app>
+    <div v-if="isAuthenticated">
+      <a class="navbar-link">
+        {{ loggedInUser.username }}
+      </a>
+      <v-btn text to="/login"> profile </v-btn>
+      <v-btn text to="/register"> log out </v-btn>
+    </div>
+
+    <div v-if="!isAuthenticated">
+      <v-btn text to="/login"> Login </v-btn>
+      <v-btn text to="/register"> Sign up </v-btn>
+    </div>
+  </v-app-bar>
 </template>
-
 <script>
 import { mapGetters } from 'vuex'
-import Navbar from '~/components/Navbar'
+
 export default {
-  components: {
-    Navbar,
-  },
   data() {
     return {
       clipped: false,
-      drawer: false,
-      fixed: false,
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
+      title: 'Virtual Sessions',
     }
+  },
+  computed: {
+    ...mapGetters(['isAuthenticated', 'loggedInUser']),
   },
 
   mounted() {
@@ -51,6 +51,11 @@ export default {
         })
       })
     }
+  },
+  methods: {
+    async logout() {
+      await this.$auth.logout()
+    },
   },
 }
 </script>
