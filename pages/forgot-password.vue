@@ -16,7 +16,6 @@
       ></v-text-field>
 
       <v-btn class="mr-4" @click="forgotPassword"> submit </v-btn>
-      <v-btn @click="clear"> clear </v-btn>
     </form>
   </div>
 </template>
@@ -39,6 +38,15 @@ export default {
   validations: {
     email: { required, email },
   },
+  computed: {
+    emailErrors() {
+      const errors = []
+      if (!this.$v.email.$dirty) return errors
+      !this.$v.email.email && errors.push('Must be valid e-mail')
+      !this.$v.email.required && errors.push('E-mail is required')
+      return errors
+    },
+  },
   methods: {
     async forgotPassword() {
       this.$v.$touch()
@@ -53,17 +61,6 @@ export default {
         this.error = e.response.data.message[0].messages[0].message
       }
     },
-  },
-  emailErrors() {
-    const errors = []
-    if (!this.$v.email.$dirty) return errors
-    !this.$v.email.email && errors.push('Must be valid e-mail')
-    !this.$v.email.required && errors.push('E-mail is required')
-    return errors
-  },
-  clear() {
-    this.$v.$reset()
-    this.email = null
   },
 }
 </script>
