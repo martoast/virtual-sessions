@@ -1,22 +1,24 @@
 <template>
   <div>
     <h2 class="title has-text-centered">Log In</h2>
-
-    <!-- <Notification v-if="error" type="danger" :message="error" /> -->
-
+    <Notification v-if="error" type="danger" :message="error" />
     <form method="post" @submit.prevent="login">
-      <v-text-field v-model="form.email" label="E-mail" required></v-text-field>
+      <v-text-field
+        v-model="form.email"
+        :error-messages="emailErrors"
+        label="E-mail"
+        required
+        @input="$v.email.$touch()"
+        @blur="$v.email.$touch()"
+      ></v-text-field>
       <v-text-field
         v-model="form.password"
-        :counter="10"
         type="password"
         label="Password"
         required
       ></v-text-field>
 
-      <div class="control">
-        <button type="submit" class="button is-dark">Log In</button>
-      </div>
+      <v-btn type="submit">Log In</v-btn>
     </form>
     <div style="margin-top: 20px">
       <p>
@@ -32,11 +34,16 @@
 
 <script>
 import Notification from '~/components/Notification'
-
+import { validationMixin } from 'vuelidate'
+import { required, email } from 'vuelidate/lib/validators'
 export default {
   middleware: 'guest',
+  mixins: [validationMixin],
   components: {
     Notification,
+  },
+  validations: {
+    email: { required, email },
   },
   data() {
     return {
@@ -46,6 +53,15 @@ export default {
       },
       error: null,
     }
+  },
+  computed: {
+    emailErrors() {
+      const errors = []
+      if (!this.$v.email.$dirty) return errors
+      !this.$v.email.email && errors.push('Must be valid e-mail')
+      !this.$v.email.required && errors.push('E-mail is required')
+      return errors
+    },
   },
   methods: {
     async login() {
@@ -60,7 +76,6 @@ export default {
         this.$router.push('/')
       } catch (e) {
         this.error = e.response.data.message[0].messages[0].message
-        alert(this.error)
       }
     },
   },

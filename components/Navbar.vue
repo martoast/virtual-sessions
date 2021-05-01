@@ -44,7 +44,7 @@
         v-if="isAuthenticated"
         @click.stop="drawer = !drawer"
       />
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title @click="$router.push('/')" v-text="title" />
       <v-spacer />
 
       <div v-if="!isAuthenticated">
