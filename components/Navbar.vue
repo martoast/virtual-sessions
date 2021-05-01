@@ -12,7 +12,7 @@
           <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
         </v-list-item-avatar>
 
-        <v-list-item-content>
+        <v-list-item-content v-if="loggedInUser">
           <v-list-item-title>{{ loggedInUser.username }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
@@ -34,20 +34,29 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <template v-slot:append>
-        <div class="pa-2">
-          <v-btn block @click="logout"> Logout </v-btn>
-        </div>
-      </template>
+
+      <div class="pa-2">
+        <v-btn block @click="logout"> Logout </v-btn>
+      </div>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon
+        v-if="isAuthenticated"
+        @click.stop="drawer = !drawer"
+      />
       <v-toolbar-title v-text="title" />
       <v-spacer />
 
       <div v-if="!isAuthenticated">
-        <v-btn text to="/login"> Login </v-btn>
-        <v-btn text to="/register"> Sign up </v-btn>
+        <v-row>
+          <v-col cols="12" class="py-2"
+            ><v-btn-toggle tile color="deep-purple accent-3" group>
+              <v-btn value="left" to="/login"> Login </v-btn>
+
+              <v-btn value="right" to="/register"> Sign up </v-btn>
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
       </div>
     </v-app-bar>
   </div>
@@ -61,13 +70,7 @@ export default {
       clipped: false,
       title: 'Virtual Sessions',
       drawer: null,
-      items: [
-        { title: 'Home', icon: 'mdi-view-dashboard', to: '/' },
-        {
-          title: 'Profile',
-          icon: 'mdi-forum',
-        },
-      ],
+      items: [{ title: 'Home', icon: 'mdi-view-dashboard', to: '/' }],
     }
   },
   computed: {
@@ -75,6 +78,14 @@ export default {
   },
 
   mounted() {
+    if (this.loggedInUser) {
+      this.items.push({
+        title: 'Profile',
+        icon: 'mdi-forum',
+        to: '/' + this.loggedInUser.username,
+      })
+    }
+
     // Get all "navbar-burger" elements
     const $navbarBurgers = Array.prototype.slice.call(
       document.querySelectorAll('.navbar-burger'),
@@ -99,6 +110,7 @@ export default {
     async logout() {
       try {
         await this.$auth.logout()
+        this.$router.push('/')
       } catch (e) {
         console.log(e)
       }
@@ -106,3 +118,9 @@ export default {
   },
 }
 </script>
+<style>
+.v-btn:not(.v-btn--round).v-size--default {
+  height: 36px !important;
+  min-width: 64px !important;
+}
+</style>
