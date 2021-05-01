@@ -4,6 +4,7 @@ require('dotenv').config()
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
+  target: 'static',
   head: {
     titleTemplate: '%s - virtual-sessions',
     title: 'virtual-sessions',
