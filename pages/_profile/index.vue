@@ -1,21 +1,35 @@
 <template>
-  <section class="section">
-    <div class="container">
-      <h2 class="title">My Profile</h2>
-    </div>
-  </section>
+  <div>
+    <profile-card :teacher="teacher"></profile-card>
+    <music-cards></music-cards>
+    <calendar></calendar>
+  </div>
 </template>
 
 <script>
+import MusicCards from '~/components/Teacher/MusicCards'
+import ProfileCard from '~/components/Teacher/ProfileCard'
+import Calendar from '~/components/Teacher/Calendar'
+
 export default {
-  async fetch({ store, params }) {
-    await store.dispatch('teacher/find', params.profile)
+  components: {
+    MusicCards,
+    ProfileCard,
+    Calendar,
   },
+  // async fetch({ store, params }) {
+  //   await store.dispatch('teacher/find', params.profile)
+  // },
   data() {
-    return {}
+    return {
+      teacher: {
+        name: null,
+        rate: 0,
+      },
+    }
   },
-  created() {
-    console.log()
+  mounted() {
+    this.teacher.name = this.$route.params.profile
   },
 }
 </script>
