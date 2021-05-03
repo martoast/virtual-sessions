@@ -3,7 +3,7 @@
     <Notification v-if="success" type="success" :message="success" />
     <Notification v-if="error" type="danger" :message="error" />
     <form v-if="!success" method="post" @submit.prevent="submit">
-      <h1 class="title">Student register</h1>
+      <h1 class="title">Register</h1>
       <v-text-field
         v-model="username"
         :error-messages="usernameErrors"
