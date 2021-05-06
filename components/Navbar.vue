@@ -1,21 +1,43 @@
 <template>
   <div>
     <v-navigation-drawer
-      v-if="isAuthenticated"
+      v-if="isAuthenticated && loggedInUser"
       v-model="drawer"
       :clipped="clipped"
       fixed
       app
     >
-      <v-list-item>
-        <v-list-item-avatar>
-          <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
-        </v-list-item-avatar>
+      <v-menu bottom min-width="200px" rounded offset-y>
+        <template v-slot:activator="{ on }">
+          <v-list-item v-on="on">
+            <v-list-item-avatar>
+              <v-img
+                src="https://randomuser.me/api/portraits/men/78.jpg"
+              ></v-img>
+            </v-list-item-avatar>
 
-        <v-list-item-content v-if="loggedInUser">
-          <v-list-item-title>{{ loggedInUser.username }}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+            <v-list-item-content v-if="loggedInUser">
+              <v-list-item-title>{{ loggedInUser.username }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+        <v-card>
+          <v-list-item-content class="justify-center">
+            <div class="mx-auto text-center">
+              <h3>{{ loggedInUser.username }}</h3>
+              <p class="caption mt-1">
+                {{ loggedInUser.email }}
+              </p>
+              <v-divider class="my-3"></v-divider>
+              <v-btn depressed rounded text :to="editaccount_url">
+                Edit Account
+              </v-btn>
+              <v-divider class="my-3"></v-divider>
+              <v-btn depressed rounded text @click="logout"> Logout </v-btn>
+            </div>
+          </v-list-item-content>
+        </v-card>
+      </v-menu>
 
       <v-divider></v-divider>
       <v-list dense>
@@ -34,10 +56,6 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-
-      <div class="pa-2">
-        <v-btn block @click="logout"> Logout </v-btn>
-      </div>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon
@@ -70,7 +88,8 @@ export default {
       clipped: false,
       title: 'Virtual Sessions',
       drawer: null,
-      items: [{ title: 'Home', icon: 'mdi-view-dashboard', to: '/' }],
+      editaccount_url: null,
+      items: [{ title: 'Home', icon: 'mdi-home', to: '/' }],
     }
   },
   computed: {
@@ -81,9 +100,10 @@ export default {
     if (this.loggedInUser) {
       this.items.push({
         title: 'Profile',
-        icon: 'mdi-forum',
+        icon: 'mdi-face-profile',
         to: '/' + this.loggedInUser.username,
       })
+      this.editaccount_url = '/' + this.loggedInUser.username + '/edit'
     }
 
     // Get all "navbar-burger" elements

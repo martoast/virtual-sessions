@@ -4,7 +4,7 @@
     <Notification v-if="error" type="danger" :message="error" />
     <form method="post" @submit.prevent="login">
       <v-text-field
-        v-model="form.email"
+        v-model="email"
         :error-messages="emailErrors"
         label="E-mail"
         required
@@ -12,7 +12,7 @@
         @blur="$v.email.$touch()"
       ></v-text-field>
       <v-text-field
-        v-model="form.password"
+        v-model="password"
         type="password"
         label="Password"
         required
@@ -47,10 +47,8 @@ export default {
   },
   data() {
     return {
-      form: {
-        email: null,
-        password: null,
-      },
+      email: null,
+      password: null,
       error: null,
     }
   },
@@ -69,8 +67,8 @@ export default {
       try {
         await this.$auth.loginWith('local', {
           data: {
-            identifier: this.form.email,
-            password: this.form.password,
+            identifier: this.email,
+            password: this.password,
           },
         })
         this.$router.push('/')
