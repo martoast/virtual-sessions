@@ -98,11 +98,83 @@
               <v-row justify="space-around" align="center">
                 <v-col style="width: 350px; flex: 0 1 auto">
                   <h2>Start:</h2>
-                  <v-time-picker v-model="start" :max="end"></v-time-picker>
+                  <v-dialog
+                    ref="dialog"
+                    v-model="modal2"
+                    :return-value.sync="form.start"
+                    persistent
+                    width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        required
+                        v-model="form.start"
+                        label="Picker in dialog"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      v-if="modal2"
+                      full-width
+                      v-model="form.start"
+                      :max="form.end"
+                    >
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="modal2 = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.dialog.save(form.start)"
+                      >
+                        OK
+                      </v-btn>
+                    </v-time-picker>
+                  </v-dialog>
                 </v-col>
                 <v-col style="width: 350px; flex: 0 1 auto">
                   <h2>End:</h2>
-                  <v-time-picker v-model="end" :min="start"></v-time-picker>
+                  <v-dialog
+                    ref="dialog2"
+                    v-model="modal1"
+                    :return-value.sync="form.end"
+                    persistent
+                    width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        required
+                        v-model="form.end"
+                        label="Picker in dialog"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      v-if="modal1"
+                      full-width
+                      v-model="form.end"
+                      :min="form.start"
+                    >
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="modal1 = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.dialog2.save(form.end)"
+                      >
+                        OK
+                      </v-btn>
+                    </v-time-picker>
+                  </v-dialog>
                 </v-col>
               </v-row>
             </v-col>
@@ -161,7 +233,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
 export default {
   middleware: 'auth',
   data() {
@@ -173,6 +244,8 @@ export default {
       hourly_rate: null,
       dates: [],
       terms: false,
+      start: '',
+      end: '',
     })
 
     return {
@@ -203,6 +276,8 @@ export default {
       snackbar: false,
       terms: false,
       defaultForm,
+      modal2: false,
+      modal1: false,
     }
   },
 
@@ -228,7 +303,15 @@ export default {
     },
     submit() {
       this.snackbar = true
-      this.resetForm()
+      try {
+        console.log({
+          ...this.form,
+          hourly_rate: parseFloat(this.form.hourly_rate),
+        })
+        this.resetForm()
+      } catch (e) {
+        console.log(e)
+      }
     },
   },
 }
