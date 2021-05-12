@@ -1,6 +1,7 @@
 <template>
   <div>
-    <profile-card :teacher="teacher"></profile-card>
+    <pre>{{ instructor }}</pre>
+    <profile-card :instructor="instructor"></profile-card>
     <music-cards></music-cards>
     <calendar></calendar>
   </div>
@@ -10,6 +11,7 @@
 import MusicCards from '~/components/Teacher/MusicCards'
 import ProfileCard from '~/components/Teacher/ProfileCard'
 import Calendar from '~/components/Teacher/Calendar'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -17,19 +19,14 @@ export default {
     ProfileCard,
     Calendar,
   },
-  // async fetch({ store, params }) {
-  //   await store.dispatch('teacher/find', params.profile)
-  // },
-  data() {
-    return {
-      teacher: {
-        name: null,
-        rate: 0,
-      },
-    }
+  async fetch({ store, params }) {
+    await store.dispatch('instructors/find', params.profile)
   },
-  mounted() {
-    this.teacher.name = this.$route.params.profile
+
+  computed: {
+    ...mapGetters({
+      instructor: 'instructors/instructor',
+    }),
   },
 }
 </script>

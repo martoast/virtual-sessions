@@ -1,10 +1,11 @@
 export const state = () => ({
-  teacher: {},
+  instructor: {},
+  instructors: [],
 })
 
 export const mutations = {
-  teacher(state, teacher) {
-    state.teacher = teacher
+  instructor(state, instructor) {
+    state.instructor = instructor
   },
 }
 
@@ -27,9 +28,11 @@ export const actions = {
 
   async find({ commit }, username) {
     console.log(username)
-    await this.$axios.get('users/me').then((res) => {
-      commit('teacher', res.data.data)
-    })
+    await this.$axios
+      .get('http://localhost:1337/instructors/' + username)
+      .then((res) => {
+        commit('instructor', JSON.parse(res.data.form))
+      })
   },
 
   async create({ commit, state }, form) {
@@ -51,5 +54,5 @@ export const actions = {
 }
 
 export const getters = {
-  teacher: (state) => state.teacher,
+  instructor: (state) => state.instructor,
 }

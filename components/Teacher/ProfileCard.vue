@@ -4,7 +4,7 @@
       height="50%"
       src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
     >
-      <v-row>
+      <v-row v-if="instructor">
         <v-col class="pa-0" cols="12">
           <v-avatar class="profile" color="grey" size="164" tile>
             <v-img
@@ -16,7 +16,7 @@
           <v-list-item dark>
             <v-list-item-content>
               <v-list-item-title class="title">
-                {{ teacher.name }}
+                {{ instructor.username }}
               </v-list-item-title>
               <genre-chips></genre-chips>
               <v-rating
@@ -38,7 +38,7 @@
 <script>
 import GenreChips from '~/components/Teacher/GenreChips'
 export default {
-  props: ['teacher'],
+  props: ['instructor'],
   components: {
     GenreChips,
   },

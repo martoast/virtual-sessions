@@ -82,13 +82,22 @@
                 <strong>Available work days:</strong>
               </p>
 
-              <v-date-picker
-                v-model="form.dates"
-                :rules="rules.dates"
-                full-width
-                no-title
-                range
-              ></v-date-picker>
+              <v-select
+                v-model="form.available_days"
+                :rules="rules.available_days"
+                :items="workdays"
+                label="Select workdays"
+                multiple
+              >
+                <template v-slot:selection="{ item, index }">
+                  <v-chip v-if="index === 0">
+                    <span>{{ item }}</span>
+                  </v-chip>
+                  <span v-if="index === 1" class="grey--text caption">
+                    (+{{ form.available_days.length - 1 }} others)
+                  </span>
+                </template>
+              </v-select>
             </v-col>
 
             <v-col cols="12" sm="6">
@@ -235,6 +244,13 @@
 import { mapGetters } from 'vuex'
 export default {
   middleware: 'auth',
+  mounted() {
+    this.$axios
+      .get('http://localhost:1337/instructors/' + this.loggedInUser.username)
+      .then((response) => {
+        console.log(response)
+      })
+  },
   data() {
     const defaultForm = Object.freeze({
       soundcloud_url: '',
@@ -242,7 +258,7 @@ export default {
       bio: '',
       selected_genres: [],
       hourly_rate: null,
-      dates: [],
+      available_days: [],
       terms: false,
       start: '',
       end: '',
@@ -260,7 +276,9 @@ export default {
         selected_genres: [
           (val) => (val || '').length > 0 || 'This field is required',
         ],
-        dates: [(val) => (val || '').length > 0 || 'This field is required'],
+        available_days: [
+          (val) => (val || '').length > 0 || 'This field is required',
+        ],
       },
       genres: [
         'House',
@@ -269,6 +287,15 @@ export default {
         'Drum&Bass',
         'Garhourly_rate',
         'Techno',
+      ],
+      workdays: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
       ],
       conditions: false,
       content:
@@ -304,10 +331,20 @@ export default {
     submit() {
       this.snackbar = true
       try {
-        console.log({
+        let _form = JSON.stringify({
           ...this.form,
           hourly_rate: parseFloat(this.form.hourly_rate),
         })
+
+        this.$axios
+          .post('http://localhost:1337/instructors/', {
+            form: _form,
+            username: this.loggedInUser.username,
+          })
+          .then((response) => {
+            console.log(response)
+          })
+
         this.resetForm()
       } catch (e) {
         console.log(e)
