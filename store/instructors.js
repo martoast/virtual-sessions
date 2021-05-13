@@ -1,11 +1,16 @@
 export const state = () => ({
   instructor: {},
-  instructors: [],
+  items: {
+    data: [],
+  },
 })
 
 export const mutations = {
   instructor(state, instructor) {
     state.instructor = instructor
+  },
+  instructors(state, form) {
+    state.items.data.push(form)
   },
 }
 
@@ -20,9 +25,11 @@ export const actions = {
           commit('renders', res.data)
         })
     } else {
-      await this.$axios.get('/api/calculators/renders').then((res) => {
-        commit('renders', res.data)
-      })
+      await this.$axios
+        .get('http://localhost:1337/instructors/')
+        .then((res) => {
+          res.data.forEach((v) => commit('instructors', JSON.parse(v.form)))
+        })
     }
   },
 
@@ -55,4 +62,5 @@ export const actions = {
 
 export const getters = {
   instructor: (state) => state.instructor,
+  items: (state) => state.items,
 }

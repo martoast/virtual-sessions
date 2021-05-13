@@ -12,22 +12,29 @@
             ></v-img>
           </v-avatar>
         </v-col>
-        <v-col class="py-0">
+        <v-col class="py-0" cols="12">
           <v-list-item dark>
             <v-list-item-content>
               <v-list-item-title class="title">
                 {{ instructor.username }}
               </v-list-item-title>
-              <genre-chips></genre-chips>
-              <v-rating
-                v-model="rating"
-                background-color="white"
-                color="yellow accent-4"
-                dense
-                half-increments
-                hover
-                size="18"
-              ></v-rating>
+              <p>{{ instructor.bio }}</p>
+              <p>{{ instructor.soundcloud_url }}</p>
+              <p>{{ instructor.spotify_url }}</p>
+              <v-row v-for="day in instructor.available_days" :key="day">
+                <v-col>{{ day }}</v-col>
+                <v-col
+                  ><p>{{ instructor.start }}</p>
+                  {{ instructor.end }}
+                </v-col>
+              </v-row>
+
+              <v-list-item-subtitle
+                >Price: ${{ instructor.hourly_rate }} USD per
+                hour</v-list-item-subtitle
+              >
+
+              <genre-chips :instructor="instructor"> </genre-chips>
             </v-list-item-content>
           </v-list-item>
         </v-col>

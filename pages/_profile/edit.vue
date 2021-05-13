@@ -23,6 +23,29 @@
           <v-row>
             <v-col cols="12" sm="6">
               <v-text-field
+                v-model="form.name"
+                color="purple darken-2"
+                required
+              >
+                <template v-slot:label>
+                  <div>Artist Name</div>
+                </template>
+              </v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="form.image_url"
+                color="blue darken-2"
+                label="spotify_url"
+                required
+              >
+                <template v-slot:label>
+                  <div>Profile image url</div>
+                </template>
+              </v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field
                 v-model="form.soundcloud_url"
                 color="purple darken-2"
                 required
@@ -244,15 +267,13 @@
 import { mapGetters } from 'vuex'
 export default {
   middleware: 'auth',
-  mounted() {
-    this.$axios
-      .get('http://localhost:1337/instructors/' + this.loggedInUser.username)
-      .then((response) => {
-        console.log(response)
-      })
+  async mounted() {
+    await this.$store.dispatch('instructors/find', this.loggedInUser.username)
   },
   data() {
     const defaultForm = Object.freeze({
+      name: '',
+      image_url: '',
       soundcloud_url: '',
       spotify_url: '',
       bio: '',
@@ -309,7 +330,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['loggedInUser', 'isAuthenticated']),
+    ...mapGetters({
+      instructor: 'instructors/instructor',
+      loggedInUser: 'loggedInUser',
+      isAuthenticated: 'isAuthenticated',
+    }),
 
     dateRangeText() {
       return this.dates.join(' ~ ')

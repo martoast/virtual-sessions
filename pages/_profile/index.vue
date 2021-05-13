@@ -1,8 +1,6 @@
 <template>
   <div>
-    <pre>{{ instructor }}</pre>
     <profile-card :instructor="instructor"></profile-card>
-    <music-cards></music-cards>
     <calendar></calendar>
   </div>
 </template>
