@@ -26,6 +26,7 @@
                 v-model="form.name"
                 color="purple darken-2"
                 required
+                disabled
               >
                 <template v-slot:label>
                   <div>Artist Name</div>
@@ -267,28 +268,23 @@
 import { mapGetters } from 'vuex'
 export default {
   middleware: 'auth',
-  async mounted() {
-    await this.$store.dispatch('instructors/find', this.loggedInUser.username)
+
+  async created() {
+    try {
+      await this.$store.dispatch('instructors/find', this.loggedInUser.username)
+      this.registered = true
+    } catch (e) {
+      console.log('hasnt saved yet')
+      this.registered = false
+    }
+    await this.resetForm()
   },
   data() {
-    const defaultForm = Object.freeze({
-      name: '',
-      image_url: '',
-      soundcloud_url: '',
-      spotify_url: '',
-      bio: '',
-      selected_genres: [],
-      hourly_rate: null,
-      available_days: [],
-      terms: false,
-      start: '',
-      end: '',
-    })
-
     return {
       start: null,
       end: null,
-      form: Object.assign({}, defaultForm),
+      form: {},
+      registered: false,
       rules: {
         hourly_rate: [(val) => val > 10 || `I don't believe you!`],
         selected_genres: [
@@ -323,7 +319,6 @@ export default {
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.',
       snackbar: false,
       terms: false,
-      defaultForm,
       modal2: false,
       modal1: false,
     }
@@ -350,25 +345,53 @@ export default {
   },
   methods: {
     resetForm() {
-      this.form = Object.assign({}, this.defaultForm)
-      this.$refs.form.reset()
+      this.form = {
+        name: this.loggedInUser.username ?? '',
+        image_url: this.instructor.image_url ?? '',
+        soundcloud_url: this.instructor.soundcloud_url ?? '',
+        spotify_url: this.instructor.spotify_url ?? '',
+        bio: this.instructor.bio ?? '',
+        selected_genres: this.instructor.selected_genres ?? [],
+        hourly_rate: this.instructor.hourly_rate ?? null,
+        available_days: this.instructor.available_days ?? [],
+        terms: this.instructor.terms ?? false,
+        start: this.instructor.start ?? '',
+        end: this.instructor.end ?? '',
+      }
     },
-    submit() {
+    async submit() {
       this.snackbar = true
       try {
         let _form = JSON.stringify({
           ...this.form,
           hourly_rate: parseFloat(this.form.hourly_rate),
         })
-
-        this.$axios
-          .post('http://localhost:1337/instructors/', {
-            form: _form,
-            username: this.loggedInUser.username,
-          })
-          .then((response) => {
-            console.log(response)
-          })
+        if (this.registered) {
+          await this.$axios
+            .put(
+              'http://localhost:1337/instructors/' + this.loggedInUser.username,
+              {
+                form: _form,
+                username: this.loggedInUser.username,
+              }
+            )
+            .then((response) => {
+              console.log(response)
+            })
+        } else {
+          await this.$axios
+            .post('http://localhost:1337/instructors/', {
+              form: _form,
+              username: this.loggedInUser.username,
+            })
+            .then((response) => {
+              console.log(response)
+            })
+        }
+        await this.$store.dispatch(
+          'instructors/find',
+          this.loggedInUser.username
+        )
 
         this.resetForm()
       } catch (e) {

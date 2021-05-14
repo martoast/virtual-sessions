@@ -29,7 +29,12 @@
                 {{ loggedInUser.email }}
               </p>
               <v-divider class="my-3"></v-divider>
-              <v-btn depressed rounded text :to="editaccount_url">
+              <v-btn
+                depressed
+                rounded
+                text
+                :to="'/' + this.loggedInUser.username + '/edit'"
+              >
                 Edit Account
               </v-btn>
               <v-divider class="my-3"></v-divider>
@@ -88,7 +93,6 @@ export default {
       clipped: false,
       title: 'Virtual Sessions',
       drawer: null,
-      editaccount_url: null,
       items: [{ title: 'Home', icon: 'mdi-home', to: '/' }],
     }
   },
@@ -103,7 +107,6 @@ export default {
         icon: 'mdi-face-profile',
         to: '/' + this.loggedInUser.username,
       })
-      this.editaccount_url = '/' + this.loggedInUser.username + '/edit'
     }
 
     // Get all "navbar-burger" elements

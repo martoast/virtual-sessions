@@ -16,9 +16,10 @@ export const mutations = {
 
 export const actions = {
   async get({ commit }, params) {
+    console.log('mother bitvh')
     if (params) {
       await this.$axios
-        .get('/api/calculators/renders', {
+        .get('http://localhost:1337/instructors/', {
           params: params,
         })
         .then((res) => {
@@ -34,7 +35,6 @@ export const actions = {
   },
 
   async find({ commit }, username) {
-    console.log(username)
     await this.$axios
       .get('http://localhost:1337/instructors/' + username)
       .then((res) => {

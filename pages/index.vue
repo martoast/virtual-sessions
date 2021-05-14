@@ -1,5 +1,10 @@
 <template>
-  <teacher-cards :instructors="instructors.data"></teacher-cards>
+  <div>
+    <teacher-cards
+      v-if="instructors"
+      :instructors="instructors.data"
+    ></teacher-cards>
+  </div>
 </template>
 
 <script>
@@ -9,12 +14,8 @@ export default {
   components: {
     TeacherCards,
   },
-  async fetch({ store }) {
-    await store.dispatch('instructors/get')
-  },
-
-  created() {
-    console.log(this.instructors)
+  async created() {
+    await this.$store.dispatch('instructors/get')
   },
 
   computed: {
